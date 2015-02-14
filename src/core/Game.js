@@ -21,8 +21,9 @@
 * @param {boolean} [transparent=false] - Use a transparent canvas background or not.
 * @param {boolean} [antialias=true] - Draw all image textures anti-aliased or not. The default is for smooth textures, but disable if your game features pixel art.
 * @param {object} [physicsConfig=null] - A physics configuration object to pass to the Physics world on creation.
+* @param {number} [resolution=1] - The resolution parameter passed onto Pixi for upscaling the canvas
 */
-Phaser.Game = function (width, height, renderer, parent, state, transparent, antialias, physicsConfig) {
+Phaser.Game = function (width, height, renderer, parent, state, transparent, antialias, physicsConfig, resolution) {
 
     /**
     * @property {number} id - Phaser Game ID (for when Pixi supports multiple instances).
@@ -79,6 +80,12 @@ Phaser.Game = function (width, height, renderer, parent, state, transparent, ant
     * @private
     */
     this._height = 600;
+
+    /**
+    * @property {integer} resolution - Used as Pixi's resolution parameter
+    * @default
+    */
+    this.resolution = 1;
 
     /**
     * @property {boolean} transparent - Use a transparent canvas background or not.
@@ -384,6 +391,11 @@ Phaser.Game = function (width, height, renderer, parent, state, transparent, ant
             this._height = height;
         }
 
+        if (typeof resolution !== 'undefined')
+        {
+            this.resolution = resolution;
+        }
+
         if (typeof renderer !== 'undefined')
         {
             this.renderType = renderer;
@@ -440,6 +452,11 @@ Phaser.Game.prototype = {
         if (config['height'])
         {
             this._height = config['height'];
+        }
+
+        if (config['resolution'])
+        {
+            this.resolution = config['resolution'];
         }
 
         if (config['renderer'])
@@ -685,7 +702,7 @@ Phaser.Game.prototype = {
                     this.renderType = Phaser.CANVAS;
                 }
 
-                this.renderer = new PIXI.CanvasRenderer(this.width, this.height, { "view": this.canvas, "transparent": this.transparent, "resolution": 1, "clearBeforeRender": true });
+                this.renderer = new PIXI.CanvasRenderer(this.width, this.height, { "view": this.canvas, "transparent": this.transparent, "resolution": this.resolution, "clearBeforeRender": true });
                 this.context = this.renderer.context;
             }
             else
@@ -698,7 +715,7 @@ Phaser.Game.prototype = {
             //  They requested WebGL and their browser supports it
             this.renderType = Phaser.WEBGL;
 
-            this.renderer = new PIXI.WebGLRenderer(this.width, this.height, { "view": this.canvas, "transparent": this.transparent, "resolution": 1, "antialias": this.antialias, "preserveDrawingBuffer": this.preserveDrawingBuffer });
+            this.renderer = new PIXI.WebGLRenderer(this.width, this.height, { "view": this.canvas, "transparent": this.transparent, "resolution": this.resolution, "antialias": this.antialias, "preserveDrawingBuffer": this.preserveDrawingBuffer });
             this.context = null;
         }
 
